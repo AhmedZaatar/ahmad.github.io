@@ -380,6 +380,7 @@
                 id: 1,
                 name: "Midnight Rose",
                 description: "A captivating blend of dark rose, oud, and vanilla",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 89.99,
                 icon: "🌹"
             },
@@ -387,6 +388,7 @@
                 id: 2,
                 name: "Ocean Breeze",
                 description: "Fresh marine notes with hints of citrus and sea salt",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 79.99,
                 icon: "🌊"
             },
@@ -394,6 +396,7 @@
                 id: 3,
                 name: "Golden Amber",
                 description: "Warm amber, sandalwood, and sweet vanilla",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 99.99,
                 icon: "✨"
             },
@@ -401,6 +404,7 @@
                 id: 4,
                 name: "Velvet Oud",
                 description: "Rich oud wood, saffron, and leather",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 129.99,
                 icon: "🪵"
             },
@@ -408,6 +412,7 @@
                 id: 5,
                 name: "Citrus Bloom",
                 description: "Zesty bergamot, jasmine, and musk",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 69.99,
                 icon: "🍊"
             },
@@ -415,6 +420,7 @@
                 id: 6,
                 name: "Midnight Jasmine",
                 description: "Exotic jasmine, gardenia, and white musk",
+                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
                 price: 84.99,
                 icon: "🌸"
             }
@@ -424,22 +430,25 @@
         let cart = [];
 
         // Load products
-        function loadProducts() {
-            const productsGrid = document.getElementById('productsGrid');
-            productsGrid.innerHTML = products.map(product => `
-                <div class="product-card">
-                    <div class="product-image">${product.icon}</div>
-                    <div class="product-info">
-                        <div class="product-title">${product.name}</div>
-                        <div class="product-description">${product.description}</div>
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
-                        <button class="add-to-cart" onclick="addToCart(${product.id})">
-                            Add to Cart 🛒
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
+       function loadProducts() {
+    const productsGrid = document.getElementById('productsGrid');
+    productsGrid.innerHTML = products.map(product => `
+        <div class="product-card">
+            <div class="product-image">
+                <img src="${product.image}" alt="${product.name}" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="product-info">
+                <div class="product-title">${product.name}</div>
+                <div class="product-description">${product.description}</div>
+                <div class="product-price">$${product.price.toFixed(2)}</div>
+                <button class="add-to-cart" onclick="addToCart(${product.id})">
+                    Add to Cart 🛒
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
 
         // Add to cart
         function addToCart(productId) {
