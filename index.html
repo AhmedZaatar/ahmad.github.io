@@ -35,21 +35,6 @@
             align-items: center;
         }
 
-        .product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.product-card:hover .product-image img {
-    transform: scale(1.05);
-}
-
-.product-image {
-    overflow: hidden;
-}
-
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
@@ -134,6 +119,18 @@
             align-items: center;
             justify-content: center;
             font-size: 4rem;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
         }
 
         .product-info {
@@ -336,6 +333,23 @@
             }
         }
 
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 3rem;
+            color: #ff6b6b;
+            background: white;
+            border-radius: 10px;
+            margin: 2rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .cart-sidebar {
@@ -389,92 +403,84 @@
     <div class="toast" id="toast">Item added to cart! 🎉</div>
 
     <script>
-        // Product Data
-        const products = [
-            {
-                id: 1,
-                name: "Midnight Rose",
-                description: "A captivating blend of dark rose, oud, and vanilla",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 89.99,
-                icon: "🌹"
-            },
-            {
-                id: 2,
-                name: "Ocean Breeze",
-                description: "Fresh marine notes with hints of citrus and sea salt",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 79.99,
-                icon: "🌊"
-            },
-            {
-                id: 3,
-                name: "Golden Amber",
-                description: "Warm amber, sandalwood, and sweet vanilla",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 99.99,
-                icon: "✨"
-            },
-            {
-                id: 4,
-                name: "Velvet Oud",
-                description: "Rich oud wood, saffron, and leather",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 129.99,
-                icon: "🪵"
-            },
-            {
-                id: 5,
-                name: "Citrus Bloom",
-                description: "Zesty bergamot, jasmine, and musk",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 69.99,
-                icon: "🍊"
-            },
-            {
-                id: 6,
-                name: "Midnight Jasmine",
-                description: "Exotic jasmine, gardenia, and white musk",
-                image: "fully-furnished-and-serviced-apartments8_midpageimg_.jpg",
-                price: 84.99,
-                icon: "🌸"
-            }
-        ];
-
-        // Cart state
+        // ============== API CONFIGURATION ==============
+        // رابط API من Google Sheets
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyBbGkK7Eh7HeDm0iP5H3pYjSb0WEeKKQ29Vb-yAVOY/dev';
+        
+        // متغيرات عامة
+        let productsData = [];
         let cart = [];
 
-        // Load products
-       function loadProducts() {
-    const productsGrid = document.getElementById('productsGrid');
-    productsGrid.innerHTML = products.map(product => `
-        <div class="product-card">
-            <div class="product-image">
-                <img src="${product.image}" alt="${product.name}" 
-                     style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div class="product-info">
-                <div class="product-title">${product.name}</div>
-                <div class="product-description">${product.description}</div>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
-                <button class="add-to-cart" onclick="addToCart(${product.id})">
-                    Add to Cart 🛒
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
+        // ============== FETCH PRODUCTS FROM API ==============
+        async function fetchProducts() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Products loaded from Google Sheets:', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                return [];
+            }
+        }
 
-        // Add to cart
+        // ============== LOAD PRODUCTS ==============
+        async function loadProducts() {
+            const productsGrid = document.getElementById('productsGrid');
+            
+            // عرض مؤشر التحميل
+            productsGrid.innerHTML = '<div class="loading">Loading products from Google Sheets... ✨</div>';
+            
+            // جلب البيانات من API
+            productsData = await fetchProducts();
+            
+            // التحقق من وجود بيانات
+            if (!productsData || productsData.length === 0) {
+                productsGrid.innerHTML = '<div class="error-message">❌ Failed to load products. Please check your connection or Google Sheets.</div>';
+                return;
+            }
+            
+            // عرض المنتجات
+            productsGrid.innerHTML = productsData.map(product => `
+                <div class="product-card">
+                    <div class="product-image">
+                        ${product.image ? 
+                            `<img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/400x400/667eea/white?text=${product.icon}'">` :
+                            `<div style="font-size: 4rem;">${product.icon || '🛍️'}</div>`
+                        }
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-description">${product.description}</div>
+                        <div class="product-price">$${parseFloat(product.price).toFixed(2)}</div>
+                        <button class="add-to-cart" onclick="addToCart(${product.id})">
+                            Add to Cart 🛒
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============== ADD TO CART ==============
         function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const existingItem = cart.find(item => item.id === productId);
+            const product = productsData.find(p => p.id == productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id == productId);
             
             if (existingItem) {
                 existingItem.quantity++;
             } else {
                 cart.push({
-                    ...product,
+                    id: product.id,
+                    name: product.name,
+                    price: parseFloat(product.price),
+                    description: product.description,
+                    icon: product.icon,
+                    image: product.image,
                     quantity: 1
                 });
             }
@@ -483,7 +489,7 @@
             showToast();
         }
 
-        // Update cart display
+        // ============== UPDATE CART DISPLAY ==============
         function updateCart() {
             const cartItems = document.getElementById('cartItems');
             const cartCount = document.getElementById('cartCount');
@@ -518,9 +524,9 @@
             cartTotal.textContent = total.toFixed(2);
         }
 
-        // Update quantity
+        // ============== UPDATE QUANTITY ==============
         function updateQuantity(productId, change) {
-            const item = cart.find(item => item.id === productId);
+            const item = cart.find(item => item.id == productId);
             if (item) {
                 item.quantity += change;
                 if (item.quantity <= 0) {
@@ -531,13 +537,13 @@
             }
         }
 
-        // Remove from cart
+        // ============== REMOVE FROM CART ==============
         function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
+            cart = cart.filter(item => item.id != productId);
             updateCart();
         }
 
-        // Toggle cart sidebar
+        // ============== TOGGLE CART SIDEBAR ==============
         function toggleCart() {
             const sidebar = document.getElementById('cartSidebar');
             const overlay = document.getElementById('overlay');
@@ -545,7 +551,7 @@
             overlay.classList.toggle('active');
         }
 
-        // Show toast notification
+        // ============== SHOW TOAST NOTIFICATION ==============
         function showToast() {
             const toast = document.getElementById('toast');
             toast.style.display = 'block';
@@ -554,7 +560,7 @@
             }, 2000);
         }
 
-        // Checkout
+        // ============== CHECKOUT ==============
         function checkout() {
             if (cart.length === 0) {
                 alert('Your cart is empty! Add some perfumes first.');
@@ -568,7 +574,7 @@
             toggleCart();
         }
 
-        // Initialize
+        // ============== INITIALIZE ==============
         loadProducts();
     </script>
 </body>
