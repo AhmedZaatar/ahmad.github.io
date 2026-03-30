@@ -413,15 +413,20 @@
         let cart = [];
 
         // ============== FETCH PRODUCTS FROM API ==============
-      async function fetchProducts() {
+     async function fetchProducts() {
     try {
-        // إضافة معامل عشوائي لمنع التخزين المؤقت
-        const url = `${API_URL}?t=${new Date().getTime()}`;
-        const response = await fetch(url);
+        // إضافة timestamp لمنع التخزين المؤقت
+        const cacheBuster = new Date().getTime();
+        const response = await fetch(`${API_URL}?_=${cacheBuster}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
+        console.log('Products loaded:', data);
         return data;
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching products:', error);
         return [];
     }
 }
