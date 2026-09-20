@@ -6,7 +6,43 @@
     <pre id="result">Loading...</pre>
     
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzYORVsjwSYkABKFvKkoz7FC2wczyWv093tK1v6ZIr_HzmYXs9G0nNaXeNVpE0auF8IBw/exec';
+        <div id="products-container" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
+
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzYORVsjwSYkABKFvKkoz7FC2wczyWv093tK1v6ZIr_HzmYXs9G0nNaXeNVpE0auF8IBw/exec';
+
+    async function loadProducts() {
+        try {
+            const response = await fetch(API_URL);
+            const products = await response.json();
+            
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                if (!product.name) return;
+
+                const card = document.createElement('div');
+                card.style.cssText = "border: 1px solid #ddd; padding: 15px; border-radius: 8px; width: 200px; text-align: center;";
+                
+                card.innerHTML = `
+                    <div style="font-size: 40px;">${product.icon || '🌹'}</div>
+                    <img src="images/${product.image}" alt="${product.name}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px; margin-top: 10px;">
+                    <h3>${product.name}</h3>
+                    <p style="font-size: 14px; color: #666;">${product.description}</p>
+                    <p style="font-weight: bold; color: #2ecc71;">$${product.price}</p>
+                    <button style="background: #333; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">اطلب الآن</button>
+                `;
+                
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Error loading products:', error);
+        }
+    }
+
+    loadProducts();
+</script>
         
         async function testAPI() {
             try {
