@@ -21,7 +21,7 @@ const fallbackProducts = [
         name: 'Golden Amber',
         description: 'درجات دافئة من العنبر والصندل والفانيلا الحلوة.',
         price: '99.99',
-        image: 'fully-furnished-and-serviced-apartments8_midpageimg_.jpg'
+        image: 'images.jpg'
     },
     {
         id: 4,
@@ -45,15 +45,6 @@ const fallbackProducts = [
         image: 'pink-space.jpg'
     }
 ];
-
-const productImages = {
-    'Midnight Rose': 'https://images.unsplash.com/photo-1528740561666-dc2479dc08ab?auto=format&fit=crop&w=900&q=80',
-    'Ocean Breeze': 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=900&q=80',
-    'Golden Amber': 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=900&q=80',
-    'Velvet Oud': 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=900&q=80',
-    'Citrus Bloom': 'https://images.unsplash.com/photo-1563170351-bc7fc0f3f2e7?auto=format&fit=crop&w=900&q=80',
-    'Midnight Jasmine': 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=900&q=80'
-};
 
 const themeToggle = document.getElementById('themeToggle');
 
@@ -86,9 +77,11 @@ function buildWhatsAppLink(product) {
 }
 
 function getProductImage(product) {
-    const localPath = `images/${product.image || ''}`;
-    const remote = productImages[product.name] || '';
-    return remote || localPath;
+    const imageFile = product.image || '';
+    if (imageFile) {
+        return `images/${encodeURI(imageFile)}`;
+    }
+    return '';
 }
 
 function renderProducts(products) {
@@ -112,7 +105,7 @@ function renderProducts(products) {
         card.innerHTML = `
                     <div class="product-image">
                         <span class="badge">مميز</span>
-                        <img src="${imageUrl}" alt="${product.name}" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1528740561666-dc2479dc08ab?auto=format&fit=crop&w=900&q=80';" />
+                        <img src="${imageUrl}" alt="${product.name}" onerror="this.onerror=null;this.src='images/images.jpg';" />
                     </div>
                     <div class="product-info">
                         <div class="product-meta">
